@@ -1,9 +1,11 @@
 #include"buffer.h"
 #include<Arduino.h>
+//TODO: 
+// - delay timing adjusted to sensor read speed 
 
 float Buffer::read(){
   while(isEmpty()){
-    delay(10);
+    vTaskDelay(1);
   }
   float value = *reader;
   step(&reader);
@@ -11,9 +13,14 @@ float Buffer::read(){
 }
 
 void Buffer::write(float value){
-  while(isFull()){
-    delay(10);
+  if(isFull()){
+    Serial.println("  ...buffer full");
+    while(isFull()){
+    //we need to do something or watchdog is killing us (such a bitch)
+      vTaskDelay(1);
+    }
   }
+
   *writer = value;
   step(&writer);
 }
