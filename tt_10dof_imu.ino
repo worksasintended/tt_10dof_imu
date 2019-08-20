@@ -1,7 +1,8 @@
 #include "BluetoothSerial.h"
 #include "buffer.h"
 BluetoothSerial SerialBT;
-
+Buffer buffer(100000);
+TaskHandle_t Task1;
 
 
 void waitForBtConnection() {
@@ -14,7 +15,13 @@ void waitForBtConnection() {
   }
 }
 
-Buffer buffer(100);
+void printBufferToSerial(  void * pvParameters ){
+  Serial.println("buffer reader running on core: "+ (String)xPortGetCoreID());
+  while(1){
+    Serial.println(buffer.read());
+  }
+}
+
 
 void setup() {
   Serial.begin(115200);
@@ -23,22 +30,13 @@ void setup() {
   if (btState) {
     Serial.println("  ...bluetooth running");
   }
-
-  
-  float test= 1.1;
-  buffer.write(test);
-  Serial.println("test1");
-  buffer.write(1.3);
-  Serial.println("test1");
-  Serial.println(buffer.read());
-  Serial.println(buffer.read());
-  Serial.println(buffer.read());
-  Serial.println("test");
-  waitForBtConnection();
+  xTaskCreatePinnedToCore(printBufferToSerial, "Reader", 1000, NULL , 0, NULL, 0);
+  //waitForBtConnection();
 
 
 }
 
 void loop() {
-  SerialBT.print(".");
+  buffer.write(1.1);
+  delay(1000); 
 }
