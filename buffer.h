@@ -2,15 +2,16 @@
 #include<cstdlib>
 #include <Arduino.h>
 
-class Buffer{
+class Buffer {
   public:
-    Buffer(size_t _size){
-     buffer = (float*)std::malloc(size*sizeof(float));
-     writer = buffer; 
-     reader = buffer;
-     size = _size;
+    Buffer(size_t _size) {
+      buffer = (float*)std::malloc(_size * sizeof(float));
+      writer = buffer;
+      reader = buffer;
+      size = _size;
     }
-    ~Buffer(){
+
+    ~Buffer() {
       std::free(buffer);
     }
 
@@ -25,6 +26,6 @@ class Buffer{
   private:
     float* writer;
     float* reader;
-    float* buffer; 
+    float* buffer;
     size_t size;
 };
